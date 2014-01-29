@@ -18,7 +18,7 @@ exports.serveAssets = function(res, asset) {
 exports.sendResponse = function(response, object, status){
   status = status || 200;
   response.writeHead(status, headers);
-  response.end(JSON.stringify(object));
+  response.end(object);
 };
 
 // As you progress, keep thinking about what helper functions you can put here!
