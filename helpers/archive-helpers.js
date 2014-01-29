@@ -35,6 +35,14 @@ exports.getIndexPage = function(cb){
   });
 };
 
+exports.getCSS = function(cb){
+  fs.readFile(paths.siteAssets+'/styles.css', 'utf8', function (err, data) {
+    if (err) throw err;
+    cb(data);
+  });
+};
+
+var URLS = {};
 exports.readListOfUrls = function(){
 };
 
@@ -50,3 +58,6 @@ exports.isURLArchived = function(){
 exports.downloadUrls = function(){
 };
 
+exports.readFile = function(cb){
+
+}
