@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var http = require('http');
 var https = require('https');
+var request = require('request');
 
 /* You will need to reuse the same paths many times over in the course of this sprint.
   Consider calling this function in `request-handler.js` and passing in the necessary
@@ -56,7 +57,7 @@ exports.getSavedSite = function(site, cb){
 };
 
 var urls = {};
-exports.readListOfUrls = readListOfUrls = function(){
+exports.readListOfUrls = readListOfUrls = function(cb){
   readFile(paths.list, function(data){
     data = data.split(',');
     for(var i = 0; i < data.length; i++) {
@@ -64,6 +65,8 @@ exports.readListOfUrls = readListOfUrls = function(){
         urls[data[i]] = true;
       }
     }
+
+    cb();
   });
 };
 
@@ -92,26 +95,17 @@ exports.isURLArchived = isURLArchived = function(url){
   }
 };
 
-
-var downloadFile = function(request_path, write_path, cb) {
-  var protocol = /^https/.test(request_path) ? https : http;
-  var file = fs.createWriteStream(write_path);
-  var request = protocol.get(request_path, function(response) {
-    response.pipe(file);
-    file.on('finish', function() {
-      file.close();
-      console.log('file downloaded from ' + request_path + ' to ' + write_path);
-      cb();
-    });
-  });
-};
-
 exports.downloadUrls = function(){
-  console.log('this was called');
+  console.log('download urls called!');
+  console.log(urls);
   for(var url in urls) {
     if(!isURLArchived(url)) {
-      console.log(url+' is trying to download');
-      downloadFile('http://'+url, paths.archivedSites+'/'+url);
+      console.log(url + ' is being saved');
+      var reqLoc = 'http://'+url;
+      var writeLocation = paths.archivedSites+'/'+url;
+      request(reqLoc).pipe(fs.createWriteStream(writeLocation));
+    } else {
+        console.log(url + 'is already saved');
     }
   }
 };
