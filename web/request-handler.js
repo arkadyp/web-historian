@@ -4,14 +4,22 @@ var httpHelpers = require('./http-helpers');
 // require more modules/folders here!
 
 var get = function(req, res){
-  if(path.extname(req.url) === '.css') {
+  siteName = req.url.slice(1);
+
+  if(archive.isUrlInList(siteName)){ //serve the saved page
+    archive.getSavedSite(siteName, function(data){
+      httpHelpers.sendResponse(res, data, 200);
+    });
+  } else if(path.extname(req.url) === '.css') {
     archive.getCSS(function(data){
       httpHelpers.sendResponse(res, data, 200, 'text/css');
     });
-  } else {
+  } else if(siteName === ""){
     archive.getIndexPage(function(data){
       httpHelpers.sendResponse(res, data, 200);
     });
+  } else {
+    httpHelpers.sendResponse(res, '<h2>404</h2>', 404);
   }
 };
 
@@ -29,7 +37,7 @@ var post = function(req, res){
     } else {
       archive.addUrlToList(siteName);
       archive.getLoadingPage(function(data){
-        httpHelpers.sendResponse(res, data, 200);
+        httpHelpers.sendResponse(res, data, 302);
       });
     }
 
@@ -46,9 +54,8 @@ var methods = {
 };
 
 exports.handleRequest = function (req, res) {
-  var urlParse = require('url').parse(req.url, true, true);
-  console.log(urlParse);
-  var method = methods[req.method];
-  method ? method(req, res) : httpHelpers.sendResponse(res, null, 404);
+  archive.downloadUrls();
+  var methodHandler = methods[req.method];
+  methodHandler ? methodHandler(req, res) : httpHelpers.sendResponse(res, '<h2>404</h2>', 404);
 };
 
