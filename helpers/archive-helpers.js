@@ -28,28 +28,49 @@ exports.initialize = function(pathsObj){
 
 var indexHTML = null;
 
-exports.getIndexPage = function(cb){
-  fs.readFile(paths.siteAssets+'/index.html', 'utf8', function (err, data) {
+var readFile = function(fileName, cb) {
+  fs.readFile(fileName, 'utf8', function(err, data){
     if (err) throw err;
     cb(data);
   });
+};
+
+exports.getIndexPage = function(cb){
+  readFile(paths.siteAssets+'/index.html', cb);
 };
 
 exports.getCSS = function(cb){
-  fs.readFile(paths.siteAssets+'/styles.css', 'utf8', function (err, data) {
-    if (err) throw err;
-    cb(data);
+  readFile(paths.siteAssets+'/styles.css', cb);
+};
+
+var urls = {};
+exports.readListOfUrls = readListOfUrls = function(){
+  readFile(paths.list, function(data){
+    data = data.split(',');
+    for(var i = 0; i < data.length; i++) {
+      if(!(data[i] in urls)){
+        urls[data[i]] = true;
+      }
+    }
+    console.log(urls);
   });
 };
 
-var URLS = {};
-exports.readListOfUrls = function(){
+exports.isUrlInList = isUrlInList = function(url){
+  return url in urls;
 };
 
-exports.isUrlInList = function(){
-};
+exports.addUrlToList = addUrlToList = function(url){
+  if(!isUrlInList(url)) {
+    //add to object
+    urls[url] = true;
 
-exports.addUrlToList = function(){
+    //append to file
+    fs.appendFile(paths.list, (','+url), function (err) {
+      if (err) throw err;
+      console.log('|'+url+'| was appended to file!');
+    });
+  }
 };
 
 exports.isURLArchived = function(){
@@ -57,7 +78,3 @@ exports.isURLArchived = function(){
 
 exports.downloadUrls = function(){
 };
-
-exports.readFile = function(cb){
-
-}
