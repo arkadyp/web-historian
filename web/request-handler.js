@@ -54,7 +54,6 @@ var methods = {
 };
 
 exports.handleRequest = function (req, res) {
-  archive.downloadUrls();
   var methodHandler = methods[req.method];
   methodHandler ? methodHandler(req, res) : httpHelpers.sendResponse(res, '<h2>404</h2>', 404);
 };
