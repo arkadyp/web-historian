@@ -30,7 +30,10 @@ var indexHTML = null;
 
 var readFile = function(fileName, cb) {
   fs.readFile(fileName, 'utf8', function(err, data){
-    if (err) throw err;
+    if (err) {
+      getLoadingPage(); //original file failed to load b/c it hasn't been saved yet; serve up the loading page
+      return;
+    }
     cb(data);
   });
 };
@@ -43,6 +46,14 @@ exports.getCSS = function(cb){
   readFile(paths.siteAssets+'/styles.css', cb);
 };
 
+exports.getLoadingPage = getLoadingPage = function(cb){
+  readFile(paths.siteAssets+'/loading.html', cb);
+};
+
+exports.getSavedSite = function(site, cb){
+  readFile(paths.archivedSites+'/'+site, cb);
+};
+
 var urls = {};
 exports.readListOfUrls = readListOfUrls = function(){
   readFile(paths.list, function(data){
@@ -52,7 +63,6 @@ exports.readListOfUrls = readListOfUrls = function(){
         urls[data[i]] = true;
       }
     }
-    console.log(urls);
   });
 };
 
