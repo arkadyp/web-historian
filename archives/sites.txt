@@ -1,1 +1,1 @@
-www.google.com,www.newSite.com,www.newSite3.com,www.google3.com,www.nba.com,www.nfl.com,www.nhl.com,www.49rafjk.com
+www.google.com,www.nytimes.com,www.nba.com,www.bbc.co.uk,www.nfl.com,www.nhl.com,www.sf.com,www.hope.com,www.travel.com,www.cheese.com,www.bacon.com,www.uptownalmanac.com
