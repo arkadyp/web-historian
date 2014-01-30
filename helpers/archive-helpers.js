@@ -31,7 +31,7 @@ var indexHTML = null;
 var readFile = function(fileName, cb) {
   fs.readFile(fileName, 'utf8', function(err, data){
     if (err) {
-      getLoadingPage(); //original file failed to load b/c it hasn't been saved yet; serve up the loading page
+      getLoadingPage(cb); //original file failed to load b/c it hasn't been saved yet; serve up the loading page
       return;
     }
     cb(data);
