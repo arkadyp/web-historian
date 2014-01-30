@@ -21,8 +21,18 @@ var post = function(req, res){
     post += data;
   });
   req.on('end', function(){
-    var formReq = post.slice(4);
-    // httpHelpers.sendResponse(res, '<h2>'+post.slice(4)+'</h2>', 201);
+    var siteName = post.slice(4);
+    if(archive.isUrlInList(siteName)){ //serve the saved page
+      archive.getSavedSite(siteName, function(data){
+        httpHelpers.sendResponse(res, data, 200);
+      });
+    } else {
+      archive.addUrlToList(siteName);
+      archive.getLoadingPage(function(data){
+        httpHelpers.sendResponse(res, data, 200);
+      });
+    }
+
   });
 };
 
@@ -36,7 +46,6 @@ var methods = {
 };
 
 exports.handleRequest = function (req, res) {
-  console.log(req.method);
   var method = methods[req.method];
   method ? method(req, res) : httpHelpers.sendResponse(res, null, 404);
 };
