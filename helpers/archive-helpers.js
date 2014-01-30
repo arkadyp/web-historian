@@ -1,5 +1,7 @@
 var fs = require('fs');
 var path = require('path');
+var http = require('http');
+var https = require('https');
 
 /* You will need to reuse the same paths many times over in the course of this sprint.
   Consider calling this function in `request-handler.js` and passing in the necessary
@@ -32,7 +34,6 @@ var readFile = function(fileName, cb) {
   fs.readFile(fileName, 'utf8', function(err, data){
     if (err) {
       getLoadingPage(cb); //original file failed to load b/c it hasn't been saved yet; serve up the loading page
-      return;
     }
     cb(data);
   });
@@ -83,8 +84,35 @@ exports.addUrlToList = addUrlToList = function(url){
   }
 };
 
-exports.isURLArchived = function(){
+exports.isURLArchived = isURLArchived = function(url){
+  if (fs.existsSync(paths.archivedSites+'/'+url)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+
+var downloadFile = function(request_path, write_path, cb) {
+  var protocol = /^https/.test(request_path) ? https : http;
+  var file = fs.createWriteStream(write_path);
+  var request = protocol.get(request_path, function(response) {
+    response.pipe(file);
+    file.on('finish', function() {
+      file.close();
+      console.log('file downloaded from ' + request_path + ' to ' + write_path);
+      cb();
+    });
+  });
 };
 
 exports.downloadUrls = function(){
+  console.log('this was called');
+  for(var url in urls) {
+    if(!isURLArchived(url)) {
+      console.log(url+' is trying to download');
+      downloadFile('http://'+url, paths.archivedSites+'/'+url);
+    }
+  }
 };
+
