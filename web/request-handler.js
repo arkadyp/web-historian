@@ -46,6 +46,8 @@ var methods = {
 };
 
 exports.handleRequest = function (req, res) {
+  var urlParse = require('url').parse(req.url, true, true);
+  console.log(urlParse);
   var method = methods[req.method];
   method ? method(req, res) : httpHelpers.sendResponse(res, null, 404);
 };
